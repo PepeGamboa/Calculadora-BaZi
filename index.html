@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Calculadora BaZi</title>
+</head>
+<body>
+    <section class="contenido">
+        <article class="col1">
+            <img src="./images/cover.jpg" alt="cover" class="cover">
+        </article>
+        <article class="col2">
+            <h1>Calculadora BaZi</h1>
+            <h4 class="definicion">La Carta BaZi, es una herramienta de análisis basada en la astrología china que se utiliza para evaluar la personalidad, las tendencias de la vida y las oportunidades de una persona.</h4>
+            <div class="contenedor-calculadora">
+                <input type="text" name="usuario" id="usuario" placeholder="Nombre">
+                <input type="date" name="fecha" id="fecha">
+                <button type="button" id="calcular">Calcular</button>
+            </div>
+            <div class="resultado-calculadora oculto">
+                <h4>Esta persona es de signo <strong class="strong" id="signo-chino"></strong></h4>
+                <h4>Su elemento es <strong class="strong" id="elemento"></strong></h4>
+            </div>
+        </article>
+    </section>
+    <footer>
+        <p>
+            ¡Hecho con ❤️! Por
+            <a href="https://github.com/PepeGamboa" target="_blank">pepedev</a> & 
+            <a href="https://github.com/linaurena" target="_blank">linaurena</a>
+        </p>
+    </footer>
+
+    <script src="index.js"></script>
+</body>
+</html>
+
+
