@@ -1,65 +1,72 @@
-
+/* Estilos para la tabla BaZi y elementos específicos */
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(to bottom, #fef6e4, #fff);
-  color: #333;
-  padding: 2rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.bazi-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Columnas responsivas */
+    gap: 1rem; /* Espacio entre pilares */
+}
+
+.pillar-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-md */
+    padding: 1rem;
+    text-align: center;
+}
+
+.pillar-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 600; /* font-semibold */
+    color: #1f2937; /* gray-800 */
+    margin-bottom: 0.75rem;
+    border-bottom: 2px solid; /* Se asignará color en JS */
+    padding-bottom: 0.5rem;
+}
+
+.tronco-celeste, .rama-terrestre {
+    margin-bottom: 0.5rem;
+}
+
+.tronco-celeste .name-cn, .rama-terrestre .name-cn {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    color: #3B82F6; /* primary color, an example */
+}
+
+.tronco-celeste .name-es, .rama-terrestre .name-es {
+    font-size: 0.875rem; /* text-sm */
+    color: #4b5563; /* gray-600 */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rama-terrestre .name-cn {
+    color: #10B981; /* secondary color, an example */
+}
+
+.animal-sign {
+    font-size: 1rem; /* text-md */
+    color: #6b7280; /* gray-500 */
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Colores específicos para los títulos de los pilares */
+.pillar-title.hour { border-color: #EF4444; /* red-500 */ }
+.pillar-title.day { border-color: #3B82F6; /* blue-500 */ }
+.pillar-title.month { border-color: #10B981; /* green-500 */ }
+.pillar-title.year { border-color: #F59E0B; /* amber-500 */ }
+
+/* Ocultar las flechas en los inputs de tipo number (si se usaran) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
   margin: 0;
 }
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 2rem;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 1rem;
-}
-
-h1 {
-  text-align: center;
-  color: #b31b1b;
-  margin-bottom: 0.2rem;
-}
-
-.subtitle {
-  text-align: center;
-  font-size: 1rem;
-  margin-bottom: 2rem;
-  color: #777;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-input, button {
-  padding: 0.7rem;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ccc;
-}
-
-button {
-  background-color: #b31b1b;
-  color: #fff;
-  cursor: pointer;
-  border: none;
-  transition: 0.3s;
-}
-
-button:hover {
-  background-color: #8d1414;
-}
-
-.resultado {
-  margin-top: 2rem;
-  border-top: 1px solid #eee;
-  padding-top: 1rem;
-}
-
-.oculto {
-  display: none;
+input[type="number"] {
+  -moz-appearance: textfield;
 }
