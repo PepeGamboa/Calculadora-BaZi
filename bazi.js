@@ -189,7 +189,7 @@ class BaZiCalculator {
         // Fecha de referencia: 1 de enero de 2000, fue Geng-Chen (庚辰)
         // Geng-Chen es el par 16 (0-indexado) o 17 (1-indexado) en el ciclo de 60. Geng es 6, Chen es 4. (6,4) -> 16
         // Si Geng-Chen es índice 16.
-        const refDate = new Date(Date.UTC(2000, 0, 1)); // 1 Enero 2000
+        const refDate = new Date(Date.UTC(1984, 3, 16)); // 1 Enero 2000
         const refGanzhiIndex = 16; // Geng-Chen
 
         const targetDate = new Date(Date.UTC(this.year, this.month - 1, this.day));
