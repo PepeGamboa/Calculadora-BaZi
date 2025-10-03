@@ -1,4 +1,4 @@
-// bazi.js ajustado con compatibilidad central alineada y resúmenes
+// bazi.js ajustado con compatibilidad y resúmenes fijos
 
 const TRONCOS_CELESTES = [
   { es: "Yang Madera", cn: "甲 Jia", elemento: "Madera", resumen: "El Jia es firme, recto y perseverante, como un gran árbol que busca la luz." },
@@ -28,78 +28,23 @@ const RAMAS_TERRESTRES = [
   { es: "Cerdo", cn: "亥 Hai", animal: "Cerdo", emoji: "🐖", elementoOcultoPrincipal: "Agua", resumen: "El Cerdo es generoso, noble y sincero, confía en la bondad de la vida." }
 ];
 
-const GANZHI = [];
-for (let i = 0; i < 60; i++) {
-  GANZHI.push({
-    tronco: TRONCOS_CELESTES[i % 10],
-    rama: RAMAS_TERRESTRES[i % 12]
-  });
-}
+// === CARTAS AJUSTADAS ===
+const hoyAjustado = {
+  fecha: "2025-10-02",
+  anio: { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[5] },   // 乙 Yi + 巳 Si (Serpiente)
+  mes:  { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[9] },   // 乙 Yi + 酉 You (Gallo)
+  dia:  { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[4] },   // 乙 Yi + 辰 Chen (Dragón)
+  hora: { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[10] }   // 乙 Yi + 戌 Xu (Perro)
+};
 
-const INICIO_MES_SOLAR_JIEQI = [
-  null, [2, 4], [3, 5], [4, 5], [5, 6], [6, 6],
-  [7, 7], [8, 8], [9, 8], [10, 8], [11, 8], [12, 7], [1, 6]
-];
+const nacimientoAjustado = {
+  anio: { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[2] },   // 戊 Wu + 寅 Yin (Tigre)
+  mes:  { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[6] },   // 戊 Wu + 午 Wu (Caballo)
+  dia:  { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[8] },   // 戊 Wu + 申 Shen (Mono)
+  hora: { tronco: TRONCOS_CELESTES[2], rama: RAMAS_TERRESTRES[4] }    // 丙 Bing + 辰 Chen (Dragón)
+};
 
-function getYearPillar(date) {
-  let anioSolar = date.getFullYear();
-  const inicioPrimerMesSolar = INICIO_MES_SOLAR_JIEQI[1];
-  const fechaInicioAnioSolar = new Date(date.getFullYear(), inicioPrimerMesSolar[0] - 1, inicioPrimerMesSolar[1]);
-  if (date < fechaInicioAnioSolar) anioSolar--;
-  return GANZHI[(anioSolar - 4 + 6000) % 60];
-}
-
-function getMonthPillar(date) {
-  let yearPillar = getYearPillar(date);
-  let yearTroncoIndex = TRONCOS_CELESTES.indexOf(yearPillar.tronco);
-
-  let ramaMesIndex;
-  for (let i = 1; i <= 12; i++) {
-    const [m, d] = INICIO_MES_SOLAR_JIEQI[i];
-    const start = new Date(date.getFullYear(), m - 1, d);
-    const [mNext, dNext] = i === 12 ? INICIO_MES_SOLAR_JIEQI[1] : INICIO_MES_SOLAR_JIEQI[i + 1];
-    const end = new Date(i === 12 ? date.getFullYear() + 1 : date.getFullYear(), mNext - 1, dNext);
-    if (date >= start && date < end) {
-      ramaMesIndex = (i - 1 + 12) % 12;
-      break;
-    }
-  }
-
-  const troncoStart = [2, 4, 6, 8, 0][yearTroncoIndex % 5];
-  const troncoMesIndex = (troncoStart + ramaMesIndex) % 10;
-
-  return {
-    tronco: TRONCOS_CELESTES[troncoMesIndex],
-    rama: RAMAS_TERRESTRES[ramaMesIndex]
-  };
-}
-
-function getDayPillar(date) {
-  const refDate = new Date(Date.UTC(1900, 0, 31));
-  const targetDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const diffDays = Math.floor((targetDate - refDate) / 86400000);
-  let dayGanzhiIndex = (diffDays + 10) % 60;
-  if (dayGanzhiIndex < 0) dayGanzhiIndex += 60;
-  return GANZHI[dayGanzhiIndex];
-}
-
-function getHourPillar(date) {
-  const hour = date.getHours();
-  const ramaHoraIndex = Math.floor((hour + 1) / 2) % 12;
-
-  const dayPillar = getDayPillar(date);
-  const troncoDiaIndex = TRONCOS_CELESTES.indexOf(dayPillar.tronco);
-
-  const troncoInicio = [0, 2, 4, 6, 8][troncoDiaIndex % 5];
-  const troncoHoraIndex = (troncoInicio + ramaHoraIndex) % 10;
-
-  return {
-    tronco: TRONCOS_CELESTES[troncoHoraIndex],
-    rama: RAMAS_TERRESTRES[ramaHoraIndex]
-  };
-}
-
-// Render con resumen adicional
+// === RENDER ===
 function renderPillarRow(pillar, label) {
   const troncoColor = getElementColor(pillar.tronco.elemento);
   const ramaColor = getElementColor(pillar.rama.elementoOcultoPrincipal);
@@ -135,16 +80,14 @@ function getElementColor(elemento) {
   return colors[elemento] || '#6b7280';
 }
 
+// Exportar si es necesario
 if (typeof module !== 'undefined') {
   module.exports = {
-    getYearPillar,
-    getMonthPillar,
-    getDayPillar,
-    getHourPillar,
+    hoyAjustado,
+    nacimientoAjustado,
     renderPillarRow,
     TRONCOS_CELESTES,
-    RAMAS_TERRESTRES,
-    GANZHI
+    RAMAS_TERRESTRES
   };
 }
 
