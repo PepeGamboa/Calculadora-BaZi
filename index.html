@@ -1,452 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora BaZi 八字</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculadora BaZi 八字 — FIX</title>
+
+  <!-- Tailwind CDN solo para utilidades; el diseño principal está en el <style> -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;transition:background-color .4s;min-height:100vh;margin:0}
+    body.light{background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%)}
+    body.dark{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)}
+
+    .main-container{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem}
+    .card-wrapper{width:100%;max-width:1400px;margin:0 auto}
+    .header-gradient{
+      background:linear-gradient(90deg,#3B82F6,#9333EA,#F59E0B);
+      background-size:300% 300%;
+      animation:gradientShift 8s linear infinite;
+      border-radius:14px;
+      padding:2.2rem;
+      text-align:center;
+      color:white;
+      box-shadow:0 18px 40px rgba(14,24,45,0.18);
     }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      transition: background-color 0.5s ease;
-      min-height: 100vh;
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    .content-card{background:rgba(255,255,255,0.95);border-radius:0 0 12px 12px;padding:1.5rem;margin-top:-6px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+    body.dark .content-card{background:rgba(30,41,59,0.9);color:#fff}
+
+    /* formulario */
+    .controls{display:flex;gap:1rem;justify-content:center;align-items:end;margin-bottom:1rem}
+    .input-field{padding:.6rem .9rem;border-radius:8px;border:2px solid #e5e7eb;background:white}
+    body.dark .input-field{background:#1e293b;border-color:#475569;color:#fff}
+
+    .btn-main{background:linear-gradient(135deg,#3B82F6,#2563EB);color:white;padding:.7rem 1.2rem;border-radius:10px;border:none;cursor:pointer;box-shadow:0 8px 22px rgba(37,99,235,0.18);font-weight:700}
+
+    /* estructura comparación */
+    .comparison-container{
+      display:grid;
+      grid-template-columns: 1fr 110px 1fr;
+      gap:1.25rem;
+      align-items:stretch;
+      width:100%;
     }
-    
-    body.dark {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    }
-    
-    body.light {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    }
-    
-    .main-container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1.5rem 1rem;
-    }
-    
-    .card-wrapper {
-      width: 100%;
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-    
-    .header-gradient {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      background-size: 200% 200%;
-      animation: gradientShift 10s ease infinite;
-      border-radius: 20px 20px 0 0;
-      padding: 2rem 1.5rem;
-      text-align: center;
-    }
-    
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    
-    .content-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 0 0 20px 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    
-    body.dark .content-card {
-      background: rgba(30, 41, 59, 0.95);
-    }
-    
-    .comparison-container {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 1.5rem;
-      align-items: start;
-      margin: 2rem 0;
-    }
-    
-    .pillar-row {
-      display: grid;
-      grid-template-columns: 80px 1fr;
-      gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      background: rgba(255,255,255,0.5);
-      border-radius: 12px;
-      border: 2px solid #e5e7eb;
-    }
-    
-    body.dark .pillar-row {
-      background: rgba(51,65,85,0.5);
-      border-color: #475569;
-    }
-    
-    .pillar-label {
-      font-size: 0.875rem;
-      font-weight: 700;
-      text-align: center;
-      color: #4b5563;
-    }
-    
-    body.dark .pillar-label {
-      color: #d1d5db;
-    }
-    
-    .pillar-content {
-      display: grid;
-      grid-template-columns: 60px 1fr 1fr;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    
-    .animal-emoji {
-      font-size: 2.5rem;
-      text-align: center;
-    }
-    
-    .pillar-info {
-      text-align: center;
-      padding: 0.5rem;
-      background: white;
-      border-radius: 8px;
-      border: 2px solid;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    body.dark .pillar-info {
-      background: #1e293b;
-    }
-    
-    .pillar-cn {
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin-bottom: 0.25rem;
-    }
-    
-    .pillar-es {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #6b7280;
-    }
-    
-    body.dark .pillar-es {
-      color: #9ca3af;
-    }
-    
-    .compatibility-divider {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 1rem 0;
-    }
-    
-    .compatibility-box {
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      border: 3px solid #ef4444;
-      border-radius: 12px;
-      font-size: 2rem;
-      box-shadow: 0 4px 12px rgba(239,68,68,0.2);
-    }
-    
-    body.dark .compatibility-box {
-      background: #1e293b;
-    }
-    
-    .column-header {
-      font-size: 1.25rem;
-      font-weight: 800;
-      text-align: center;
-      padding: 1rem;
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
-    
-    .birth-header {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-      color: #667eea;
-      border: 2px solid #667eea;
-    }
-    
-    body.dark .birth-header {
-      color: #93c5fd;
-      border-color: #93c5fd;
-    }
-    
-    .today-header {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2));
-      color: #10b981;
-      border: 2px solid #10b981;
-    }
-    
-    body.dark .today-header {
-      color: #6ee7b7;
-      border-color: #6ee7b7;
-    }
-    
-    .btn-main {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      font-weight: 700;
-      border-radius: 12px;
-      padding: 0.875rem 2rem;
-      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-      transition: all 0.3s;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    
-    .btn-main:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
-    }
-    
-    .theme-toggle {
-      position: relative;
-      width: 60px;
-      height: 30px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.4s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    
-    .theme-toggle::after {
-      content: '🌙';
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border-radius: 50%;
-      transition: all 0.4s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-    }
-    
-    body.dark .theme-toggle::after {
-      content: '☀️';
-      transform: translateX(30px);
-      background: #fbbf24;
-    }
-    
-    .input-field {
-      width: 100%;
-      border-radius: 10px;
-      border: 2px solid #e5e7eb;
-      padding: 0.75rem 1rem;
-      font-size: 0.95rem;
-      transition: all 0.3s;
-      background: white;
-    }
-    
-    body.dark .input-field {
-      background: #1e293b;
-      border-color: #475569;
-      color: white;
-    }
-    
-    .input-field:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .lang-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border-radius: 10px;
-      background: white;
-      border: 2px solid #e5e7eb;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    body.dark .lang-btn {
-      background: #1e293b;
-      border-color: #475569;
-      color: white;
-    }
-    
-    .lang-menu {
-      position: absolute;
-      right: 0;
-      margin-top: 0.5rem;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      overflow: hidden;
-      z-index: 50;
-      min-width: 120px;
-    }
-    
-    body.dark .lang-menu {
-      background: #1e293b;
-    }
-    
-    .lang-option {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      text-align: left;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      transition: background 0.2s;
-      color: #1f2937;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    body.dark .lang-option {
-      color: #f3f4f6;
-    }
-    
-    .lang-option:hover {
-      background: #f3f4f6;
-    }
-    
-    body.dark .lang-option:hover {
-      background: #334155;
-    }
-    
-    .analysis-section {
-      margin-top: 2rem;
-      padding: 1.5rem;
-      background: rgba(255,255,255,0.5);
-      border-radius: 16px;
-      border: 2px solid #e5e7eb;
-    }
-    
-    body.dark .analysis-section {
-      background: rgba(51,65,85,0.5);
-      border-color: #475569;
-    }
-    
-    .heart-scale {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      font-size: 2rem;
-      margin: 1rem 0;
-    }
-    
-    @media (max-width: 1200px) {
-      .comparison-container {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
-      
-      .compatibility-divider {
-        flex-direction: row;
-        justify-content: center;
-      }
-      
-      .pillar-content {
-        grid-template-columns: 50px 1fr 1fr;
-      }
+
+    .column-header{font-weight:800;padding:.8rem;border-radius:10px;text-align:center;margin-bottom:.9rem}
+    .birth-header{background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.12));border:2px solid #667eea;color:#334155}
+    .today-header{background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,197,94,0.08));border:2px solid #10b981;color:#065f46}
+
+    /* columna (izq/der): lista de filas */
+    .birth-column,.today-column{display:flex;flex-direction:column;gap:1rem}
+
+    /* cada fila combina etiqueta + 2 tarjetas */
+    .pillar-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:1rem;align-items:start;padding:1rem;background:rgba(255,255,255,0.8);border-radius:10px;border:1px solid rgba(229,231,235,0.9)}
+    body.dark .pillar-row{background:rgba(30,41,59,0.55);border-color:#475569}
+
+    .pillar-label{font-weight:700;color:#4b5563;display:flex;align-items:center;justify-content:flex-start;padding-left:.5rem}
+    body.dark .pillar-label{color:#e6eef8}
+
+    .pillar-info{background:white;border-radius:8px;padding:.6rem;border:2px solid #e5e7eb;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:150px}
+    body.dark .pillar-info{background:#0f1724;border-color:#475569;color:#e6eef8}
+
+    .pillar-cn{font-weight:800;font-size:1.15rem;margin-bottom:.25rem}
+    .pillar-es{font-weight:600;color:#6b7280;font-size:.82rem;margin-bottom:.25rem}
+    body.dark .pillar-es{color:#9ca3af}
+    .pillar-summary{font-size:.78rem;color:#374151;text-align:center;line-height:1.05rem}
+    body.dark .pillar-summary{color:#cbd5e1}
+
+    .animal-emoji{font-size:1.9rem;margin-bottom:.2rem}
+
+    /* corazones (centro) */
+    .compatibility-divider{display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:6px 0;height:100%}
+    .compatibility-box{width:80px;height:80px;background:white;border-radius:12px;border:3px solid #ef4444;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 6px 18px rgba(239,68,68,0.12)}
+    body.dark .compatibility-box{background:#0f1724}
+
+    /* análisis */
+    .analysis-section{margin-top:1.2rem;padding:1.2rem;border-radius:10px;background:rgba(255,255,255,0.85);border:1px solid rgba(229,231,235,0.9)}
+    body.dark .analysis-section{background:rgba(30,41,59,0.55);border-color:#475569;color:#fff}
+
+    /* responsive */
+    @media (max-width: 980px){
+      .comparison-container{grid-template-columns:1fr;gap:1rem}
+      .compatibility-divider{flex-direction:row;justify-content:center;padding:8px;gap:.6rem}
+      .compatibility-box{width:56px;height:56px;font-size:1.2rem}
+      .pillar-row{grid-template-columns:50px 1fr;align-items:center}
     }
   </style>
 </head>
 <body class="light">
-  <div class="fixed top-4 right-4 flex items-center gap-3 z-50">
-    <div class="theme-toggle" id="theme-toggle"></div>
-    
-    <div class="relative">
-      <button id="lang-btn" class="lang-btn">
-        <span id="lang-flag" class="text-lg">🇪🇸</span>
-        <span id="lang-code" class="text-sm font-bold">ESP</span>
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </button>
-      <div id="lang-menu" class="lang-menu hidden">
-        <button data-lang="es" class="lang-option"><span class="text-lg">🇪🇸</span> <span class="text-sm">ESP</span></button>
-        <button data-lang="en" class="lang-option"><span class="text-lg">🇬🇧</span> <span class="text-sm">ENG</span></button>
-        <button data-lang="de" class="lang-option"><span class="text-lg">🇩🇪</span> <span class="text-sm">DEU</span></button>
-        <button data-lang="it" class="lang-option"><span class="text-lg">🇮🇹</span> <span class="text-sm">ITA</span></button>
-        <button data-lang="fr" class="lang-option"><span class="text-lg">🇫🇷</span> <span class="text-sm">FRA</span></button>
-      </div>
-    </div>
-  </div>
-
   <div class="main-container">
     <div class="card-wrapper">
       <div class="header-gradient">
-        <h1 id="title" class="text-4xl md:text-5xl font-black text-white mb-2 drop-shadow-lg">
-          Calculadora BaZi 八字
-        </h1>
-        <p id="subtitle" class="text-lg md:text-xl text-white/90 font-medium">
-          Cuatro Pilares del Destino
-        </p>
+        <h1 class="text-4xl font-black">Calculadora BaZi 八字</h1>
+        <p class="text-sm mt-1/2">Cuatro Pilares del Destino</p>
       </div>
 
-      <div class="content-card">
-        <div class="p-6 md:p-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 max-w-4xl mx-auto">
+      <div class="content-card mt-4">
+        <div style="padding:1rem 1.25rem;">
+          <!-- controles: mantenemos inputs (opcional) -->
+          <div class="controls">
             <div>
-              <label id="label-date" for="birth-date" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                Fecha de Nacimiento
-              </label>
-              <input type="date" id="birth-date" class="input-field" value="1998-06-30">
+              <label style="display:block;font-weight:700;margin-bottom:.25rem">Fecha de Nacimiento</label>
+              <input id="birth-date" type="date" class="input-field" value="1998-06-30">
             </div>
             <div>
-              <label id="label-time" for="birth-time" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                Hora de Nacimiento
-              </label>
-              <input type="time" id="birth-time" class="input-field" value="08:00">
+              <label style="display:block;font-weight:700;margin-bottom:.25rem">Hora de Nacimiento</label>
+              <input id="birth-time" type="time" class="input-field" value="08:00">
             </div>
-            <div class="flex items-end">
-              <button id="calculate-btn" class="btn-main w-full">
-                Calcular
-              </button>
+            <div style="align-self:flex-end">
+              <button id="calculate-btn" class="btn-main">Mostrar Carta</button>
             </div>
           </div>
 
-          <div id="error-message" class="hidden mb-4 p-3 bg-red-50 dark:bg-red-900/30 border-2 border-red-400 text-red-700 dark:text-red-300 rounded-xl text-center font-bold max-w-2xl mx-auto">
-            Por favor ingresa una fecha y hora válidas
-          </div>
-
+          <!-- resultados -->
           <div id="results-container" class="hidden">
-            <h2 class="text-2xl font-black text-center mb-4 text-gray-800 dark:text-white">
-              Carta BaZi de Hoy
-            </h2>
-            <div class="text-center text-base font-semibold text-gray-600 dark:text-gray-400 mb-4">
-              <span id="today-date-display"></span>
+            <div style="text-align:center;margin-bottom:8px">
+              <h2 style="font-weight:800">Carta BaZi</h2>
             </div>
 
             <div class="comparison-container">
-              <!-- Columna Izquierda: Tu Carta -->
+              <!-- izquierda -->
               <div class="birth-column">
                 <div class="column-header birth-header">Tu Carta BaZi</div>
                 <div id="user-pillars"></div>
               </div>
 
-              <!-- Columna Central: Compatibilidad -->
+              <!-- corazones -->
               <div class="compatibility-divider">
                 <div class="compatibility-box" id="compat-year">❤️</div>
                 <div class="compatibility-box" id="compat-month">❤️</div>
@@ -454,7 +137,7 @@
                 <div class="compatibility-box" id="compat-hour">❤️</div>
               </div>
 
-              <!-- Columna Derecha: Hoy -->
+              <!-- derecha -->
               <div class="today-column">
                 <div class="column-header today-header">Hoy</div>
                 <div id="today-pillars"></div>
@@ -462,431 +145,294 @@
             </div>
 
             <div class="analysis-section">
-              <h3 class="text-xl font-black text-center mb-3 text-gray-800 dark:text-white">
-                Análisis de Compatibilidad
-              </h3>
-              <div id="compatibility-result"></div>
+              <div style="text-align:center;font-weight:800;margin-bottom:.6rem">Análisis de Compatibilidad</div>
+              <div id="compatibility-result" style="text-align:center"></div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 
+  <!-- ======= JS Inline (completo y autocontenido) ======= -->
   <script>
+    /* Datos: Troncos / Ramas (con resúmenes y emojis) */
     const TRONCOS_CELESTES = [
-      { es: "Yang Madera", cn: "甲 Jia", elemento: "Madera" },
-      { es: "Yin Madera", cn: "乙 Yi", elemento: "Madera" },
-      { es: "Yang Fuego", cn: "丙 Bing", elemento: "Fuego" },
-      { es: "Yin Fuego", cn: "丁 Ding", elemento: "Fuego" },
-      { es: "Yang Tierra", cn: "戊 Wu", elemento: "Tierra" },
-      { es: "Yin Tierra", cn: "己 Ji", elemento: "Tierra" },
-      { es: "Yang Metal", cn: "庚 Geng", elemento: "Metal" },
-      { es: "Yin Metal", cn: "辛 Xin", elemento: "Metal" },
-      { es: "Yang Agua", cn: "壬 Ren", elemento: "Agua" },
-      { es: "Yin Agua", cn: "癸 Gui", elemento: "Agua" }
+      { es: "Yang Madera", cn: "甲 Jia", elemento: "Madera", resumen: "El Jia es firme, recto y perseverante, como un gran árbol que busca la luz." },
+      { es: "Yin Madera", cn: "乙 Yi", elemento: "Madera", resumen: "El Yi es flexible, adaptable y sutil, como una enredadera que encuentra su camino." },
+      { es: "Yang Fuego", cn: "丙 Bing", elemento: "Fuego", resumen: "El Bing es luminoso, entusiasta y noble, como el sol." },
+      { es: "Yin Fuego", cn: "丁 Ding", elemento: "Fuego", resumen: "El Ding es cálido, suave y misterioso, como una vela." },
+      { es: "Yang Tierra", cn: "戊 Wu", elemento: "Tierra", resumen: "El Wu es estable, confiable y protector, como una montaña." },
+      { es: "Yin Tierra", cn: "己 Ji", elemento: "Tierra", resumen: "El Ji es práctico, detallista y cuidadoso, como la tierra fértil." },
+      { es: "Yang Metal", cn: "庚 Geng", elemento: "Metal", resumen: "El Geng es fuerte, justo y decidido, como una espada." },
+      { es: "Yin Metal", cn: "辛 Xin", elemento: "Metal", resumen: "El Xin es refinado, elegante y persuasivo, como una joya." },
+      { es: "Yang Agua", cn: "壬 Ren", elemento: "Agua", resumen: "El Ren es profundo, vasto y poderoso, como el océano." },
+      { es: "Yin Agua", cn: "癸 Gui", elemento: "Agua", resumen: "El Gui es sutil, reflexivo y cambiante, como la lluvia." }
     ];
 
     const RAMAS_TERRESTRES = [
-      { es: "Rata", cn: "子 Zi", animal: "Rata", emoji: "🐀", elementoOcultoPrincipal: "Agua" },
-      { es: "Buey", cn: "丑 Chou", animal: "Buey", emoji: "🐂", elementoOcultoPrincipal: "Tierra" },
-      { es: "Tigre", cn: "寅 Yin", animal: "Tigre", emoji: "🐅", elementoOcultoPrincipal: "Madera" },
-      { es: "Conejo", cn: "卯 Mao", animal: "Conejo", emoji: "🐇", elementoOcultoPrincipal: "Madera" },
-      { es: "Dragón", cn: "辰 Chen", animal: "Dragón", emoji: "🐉", elementoOcultoPrincipal: "Tierra" },
-      { es: "Serpiente", cn: "巳 Si", animal: "Serpiente", emoji: "🐍", elementoOcultoPrincipal: "Fuego" },
-      { es: "Caballo", cn: "午 Wu", animal: "Caballo", emoji: "🐴", elementoOcultoPrincipal: "Fuego" },
-      { es: "Cabra", cn: "未 Wei", animal: "Cabra", emoji: "🐐", elementoOcultoPrincipal: "Tierra" },
-      { es: "Mono", cn: "申 Shen", animal: "Mono", emoji: "🐵", elementoOcultoPrincipal: "Metal" },
-      { es: "Gallo", cn: "酉 You", animal: "Gallo", emoji: "🐓", elementoOcultoPrincipal: "Metal" },
-      { es: "Perro", cn: "戌 Xu", animal: "Perro", emoji: "🐕", elementoOcultoPrincipal: "Tierra" },
-      { es: "Cerdo", cn: "亥 Hai", animal: "Cerdo", emoji: "🐖", elementoOcultoPrincipal: "Agua" }
+      { es: "Rata", cn: "子 Zi", animal: "Rata", emoji: "🐀", elementoOcultoPrincipal: "Agua", resumen: "Astuta e ingeniosa." },
+      { es: "Buey", cn: "丑 Chou", animal: "Buey", emoji: "🐂", elementoOcultoPrincipal: "Tierra", resumen: "Trabajador y constante." },
+      { es: "Tigre", cn: "寅 Yin", animal: "Tigre", emoji: "🐅", elementoOcultoPrincipal: "Madera", resumen: "Valiente y protector." },
+      { es: "Conejo", cn: "卯 Mao", animal: "Conejo", emoji: "🐇", elementoOcultoPrincipal: "Madera", resumen: "Sensible y diplomático." },
+      { es: "Dragón", cn: "辰 Chen", animal: "Dragón", emoji: "🐉", elementoOcultoPrincipal: "Tierra", resumen: "Magnético y visionario." },
+      { es: "Serpiente", cn: "巳 Si", animal: "Serpiente", emoji: "🐍", elementoOcultoPrincipal: "Fuego", resumen: "Sabia e intuitiva." },
+      { es: "Caballo", cn: "午 Wu", animal: "Caballo", emoji: "🐴", elementoOcultoPrincipal: "Fuego", resumen: "Libre y apasionado." },
+      { es: "Cabra", cn: "未 Wei", animal: "Cabra", emoji: "🐐", elementoOcultoPrincipal: "Tierra", resumen: "Compasiva y artística." },
+      { es: "Mono", cn: "申 Shen", animal: "Mono", emoji: "🐵", elementoOcultoPrincipal: "Metal", resumen: "Ingenioso y curioso." },
+      { es: "Gallo", cn: "酉 You", animal: "Gallo", emoji: "🐓", elementoOcultoPrincipal: "Metal", resumen: "Observador y preciso." },
+      { es: "Perro", cn: "戌 Xu", animal: "Perro", emoji: "🐕", elementoOcultoPrincipal: "Tierra", resumen: "Leal y protector." },
+      { es: "Cerdo", cn: "亥 Hai", animal: "Cerdo", emoji: "🐖", elementoOcultoPrincipal: "Agua", resumen: "Generoso y noble." }
     ];
 
+    /* Ganzhi 60 base (sencillo, para day pillar reference) */
     const GANZHI = [];
-    for (let i = 0; i < 60; i++) {
-      GANZHI.push({
-        tronco: TRONCOS_CELESTES[i % 10],
-        rama: RAMAS_TERRESTRES[i % 12]
-      });
+    for (let i=0;i<60;i++) GANZHI.push({ tronco: TRONCOS_CELESTES[i%10], rama: RAMAS_TERRESTRES[i%12] });
+
+    /* Inicio de meses solares (simplificado) */
+    const INICIO_MES_SOLAR_JIEQI = [ null, [2,4],[3,5],[4,5],[5,6],[6,6],[7,7],[8,8],[9,8],[10,8],[11,8],[12,7],[1,6] ];
+
+    /* FUNCIONES para calcular pilares (year/month/day/hour) - versión simplificada pero funcional */
+    function getYearPillar(date){
+      let anio = date.getFullYear();
+      const inicio = INICIO_MES_SOLAR_JIEQI[1];
+      const inicioDate = new Date(date.getFullYear(), inicio[0]-1, inicio[1]);
+      if (date < inicioDate) anio--;
+      return GANZHI[(anio - 4 + 6000) % 60];
     }
 
-    const INICIO_MES_SOLAR_JIEQI = [
-      null, [2, 4], [3, 5], [4, 5], [5, 6], [6, 6],
-      [7, 7], [8, 8], [9, 8], [10, 8], [11, 8], [12, 7], [1, 6]
-    ];
-
-    function getYearPillar(date) {
-      let anioSolar = date.getFullYear();
-      const inicioPrimerMesSolar = INICIO_MES_SOLAR_JIEQI[1];
-      const fechaInicioAnioSolar = new Date(date.getFullYear(), inicioPrimerMesSolar[0] - 1, inicioPrimerMesSolar[1]);
-      if (date < fechaInicioAnioSolar) anioSolar--;
-      return GANZHI[(anioSolar - 4 + 6000) % 60];
-    }
-
-    function getMonthPillar(date) {
-      let anioParaMes = date.getFullYear();
-      let ramaMesIndex;
-      let mesSolarDeterminado = false;
-
-      for (let i = 1; i <= 12; i++) {
-        const [mGregJieqi, dGregJieqi] = INICIO_MES_SOLAR_JIEQI[i];
-        const fechaJieqiActual = new Date(anioParaMes, mGregJieqi - 1, dGregJieqi);
-        
-        let mGregJieqiSiguiente, dGregJieqiSiguiente, anioSiguienteJieqi;
-        if (i === 12) {
-          mGregJieqiSiguiente = INICIO_MES_SOLAR_JIEQI[1][0];
-          dGregJieqiSiguiente = INICIO_MES_SOLAR_JIEQI[1][1];
-          anioSiguienteJieqi = anioParaMes + 1;
-        } else {
-          mGregJieqiSiguiente = INICIO_MES_SOLAR_JIEQI[i + 1][0];
-          dGregJieqiSiguiente = INICIO_MES_SOLAR_JIEQI[i + 1][1];
-          anioSiguienteJieqi = anioParaMes;
-        }
-        
-        const fechaJieqiSiguiente = new Date(anioSiguienteJieqi, mGregJieqiSiguiente - 1, dGregJieqiSiguiente);
-        
-        if (date >= fechaJieqiActual && date < fechaJieqiSiguiente) {
-          ramaMesIndex = (i + 1) % 12;
-          mesSolarDeterminado = true;
-          break;
-        }
+    function getMonthPillar(date){
+      // búsqueda del mes solar
+      const anio = date.getFullYear();
+      let idx = 1;
+      for (let i=1;i<=12;i++){
+        const [m,d]=INICIO_MES_SOLAR_JIEQI[i];
+        const start = new Date(anio,m-1,d);
+        const nextIdx = i===12?1:i+1;
+        const [mn,dn] = INICIO_MES_SOLAR_JIEQI[nextIdx];
+        const end = new Date(i===12?anio+1:anio,mn-1,dn);
+        if (date >= start && date < end){ idx = (i+1)%12; break; }
       }
+      const yearTroncoIndex = TRONCOS_CELESTES.indexOf(getYearPillar(date).tronco);
+      const startMap = [2,4,6,8,0];
+      const start = startMap[yearTroncoIndex%5];
+      const offset = idx>=2? idx-2 : idx+10;
+      const troncoIndex = (start + offset) % 10;
+      return { tronco: TRONCOS_CELESTES[troncoIndex], rama: RAMAS_TERRESTRES[idx] };
+    }
 
-      if (!mesSolarDeterminado) ramaMesIndex = 1;
+    function getDayPillar(date){
+      const ref = new Date(Date.UTC(2000,0,1));
+      const tgt = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const diff = Math.floor((tgt - ref)/86400000);
+      let idx = (16 + diff) % 60;
+      if (idx < 0) idx += 60;
+      return GANZHI[idx];
+    }
 
-      const yearPillarTroncoIndex = TRONCOS_CELESTES.indexOf(getYearPillar(date).tronco);
-      const primerTroncoMesMap = [2, 4, 6, 8, 0];
-      const primerTroncoMes = primerTroncoMesMap[yearPillarTroncoIndex % 5];
-      const monthSequenceOffset = ramaMesIndex >= 2 ? ramaMesIndex - 2 : ramaMesIndex + 10;
-      const troncoMesIndex = (primerTroncoMes + monthSequenceOffset) % 10;
+    function getHourPillar(date){
+      const h = date.getHours();
+      let branch;
+      if (h>=23 || h<1) branch=0;
+      else if (h<3) branch=1;
+      else if (h<5) branch=2;
+      else if (h<7) branch=3;
+      else if (h<9) branch=4;
+      else if (h<11) branch=5;
+      else if (h<13) branch=6;
+      else if (h<15) branch=7;
+      else if (h<17) branch=8;
+      else if (h<19) branch=9;
+      else if (h<21) branch=10;
+      else branch=11;
+      const dayTroncoIndex = TRONCOS_CELESTES.indexOf(getDayPillar(date).tronco);
+      const startMap = [0,2,4,6,8];
+      const start = startMap[dayTroncoIndex%5];
+      const troncoIndex = (start + branch) % 10;
+      return { tronco: TRONCOS_CELESTES[troncoIndex], rama: RAMAS_TERRESTRES[branch] };
+    }
 
+    function colorFor(elemento){
       return {
-        tronco: TRONCOS_CELESTES[troncoMesIndex],
-        rama: RAMAS_TERRESTRES[ramaMesIndex]
-      };
+        'Madera':'#10b981','Fuego':'#ef4444','Tierra':'#f59e0b','Metal':'#9ca3af','Agua':'#3b82f6'
+      }[elemento] || '#6b7280';
     }
 
-    function getDayPillar(date) {
-      const refDate = new Date(Date.UTC(2000, 0, 1));
-      const targetDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-      const diffTime = targetDate.getTime() - refDate.getTime();
-      const diffDays = Math.floor(diffTime / 86400000);
-      let dayGanzhiIndex = (16 + diffDays) % 60;
-      if (dayGanzhiIndex < 0) dayGanzhiIndex += 60;
-      return GANZHI[dayGanzhiIndex];
-    }
-
-    function getHourPillar(date) {
-      const hourForBranch = date.getHours();
-      const dayPillar = getDayPillar(date);
-      const dayTroncoIndex = TRONCOS_CELESTES.indexOf(dayPillar.tronco);
-      
-      let ramaHoraIndex;
-      if (hourForBranch >= 23 || hourForBranch < 1) ramaHoraIndex = 0;
-      else if (hourForBranch >= 1 && hourForBranch < 3) ramaHoraIndex = 1;
-      else if (hourForBranch >= 3 && hourForBranch < 5) ramaHoraIndex = 2;
-      else if (hourForBranch >= 5 && hourForBranch < 7) ramaHoraIndex = 3;
-      else if (hourForBranch >= 7 && hourForBranch < 9) ramaHoraIndex = 4;
-      else if (hourForBranch >= 9 && hourForBranch < 11) ramaHoraIndex = 5;
-      else if (hourForBranch >= 11 && hourForBranch < 13) ramaHoraIndex = 6;
-      else if (hourForBranch >= 13 && hourForBranch < 15) ramaHoraIndex = 7;
-      else if (hourForBranch >= 15 && hourForBranch < 17) ramaHoraIndex = 8;
-      else if (hourForBranch >= 17 && hourForBranch < 19) ramaHoraIndex = 9;
-      else if (hourForBranch >= 19 && hourForBranch < 21) ramaHoraIndex = 10;
-      else ramaHoraIndex = 11;
-
-      const primerTroncoHoraMap = [0, 2, 4, 6, 8];
-      const primerTroncoHora = primerTroncoHoraMap[dayTroncoIndex % 5];
-      const troncoHoraIndex = (primerTroncoHora + ramaHoraIndex) % 10;
-
-      return {
-        tronco: TRONCOS_CELESTES[troncoHoraIndex],
-        rama: RAMAS_TERRESTRES[ramaHoraIndex]
-      };
-    }
-
-    function getElementColor(elemento) {
-      const colors = {
-        'Madera': '#10b981',
-        'Fuego': '#ef4444',
-        'Tierra': '#f59e0b',
-        'Metal': '#9ca3af',
-        'Agua': '#3b82f6'
-      };
-      return colors[elemento] || '#6b7280';
-    }
-
-    function renderPillarRow(pillar, label) {
-      const troncoColor = getElementColor(pillar.tronco.elemento);
-      const ramaColor = getElementColor(pillar.rama.elementoOcultoPrincipal);
-      
+    /* RENDER de una fila (tronco + rama con resúmenes) */
+    function renderPillarRow(pillar, label){
+      const troncoColor = colorFor(pillar.tronco.elemento);
+      const ramaColor = colorFor(pillar.rama.elementoOcultoPrincipal);
       return `
         <div class="pillar-row">
           <div class="pillar-label">${label}</div>
-          <div class="pillar-content">
+          <div class="pillar-info" style="border-color: ${troncoColor}">
+            <div class="animal-emoji">${pillar.tronco.cn === '' ? '' : ''}</div>
+            <div class="pillar-cn" style="color:${troncoColor}">${pillar.tronco.cn}</div>
+            <div class="pillar-es">${pillar.tronco.es}</div>
+            <div class="pillar-summary" style="margin-top:.5rem">${pillar.tronco.resumen}</div>
+          </div>
+          <div class="pillar-info" style="border-color: ${ramaColor}">
             <div class="animal-emoji">${pillar.rama.emoji}</div>
-            <div class="pillar-info" style="border-color: ${troncoColor}">
-              <div class="pillar-cn" style="color: ${troncoColor}">${pillar.tronco.cn}</div>
-              <div class="pillar-es">${pillar.tronco.es}</div>
-            </div>
-            <div class="pillar-info" style="border-color: ${ramaColor}">
-              <div class="pillar-cn" style="color: ${ramaColor}">${pillar.rama.cn}</div>
-              <div class="pillar-es">${pillar.rama.animal}</div>
-            </div>
+            <div class="pillar-cn" style="color:${ramaColor}">${pillar.rama.cn}</div>
+            <div class="pillar-es">${pillar.rama.animal}</div>
+            <div class="pillar-summary" style="margin-top:.5rem">${pillar.rama.resumen}</div>
           </div>
         </div>
       `;
     }
 
-    function calculateCompatibility(userPillars, todayPillars) {
-      const elementRelations = {
-        'Madera': { genera: 'Fuego', controla: 'Tierra' },
-        'Fuego': { genera: 'Tierra', controla: 'Metal' },
-        'Tierra': { genera: 'Metal', controla: 'Agua' },
-        'Metal': { genera: 'Agua', controla: 'Madera' },
-        'Agua': { genera: 'Madera', controla: 'Fuego' }
+    /* Compatibilidad (simplificada por elemento oculto) */
+    function calculateCompatibility(user, today){
+      const relations = {
+        'Madera': {genera:'Fuego', controla:'Tierra'},
+        'Fuego': {genera:'Tierra', controla:'Metal'},
+        'Tierra': {genera:'Metal', controla:'Agua'},
+        'Metal': {genera:'Agua', controla:'Madera'},
+        'Agua': {genera:'Madera', controla:'Fuego'}
       };
-
-      const pillars = ['year', 'month', 'day', 'hour'];
-      const scores = {};
-      let totalScore = 0;
-
-      pillars.forEach(key => {
-        const userElem = userPillars[key].rama.elementoOcultoPrincipal;
-        const todayElem = todayPillars[key].rama.elementoOcultoPrincipal;
-        
-        let score = 0;
-        if (userElem === todayElem) {
-          score = 2;
-        } else if (elementRelations[userElem].genera === todayElem) {
-          score = 1;
-        } else if (elementRelations[todayElem].genera === userElem) {
-          score = 1;
-        } else if (elementRelations[userElem].controla === todayElem || elementRelations[todayElem].controla === userElem) {
-          score = -1;
-        }
-        
-        scores[key] = score;
-        totalScore += score;
+      const keys=['year','month','day','hour'];
+      let total=0, scores={};
+      keys.forEach(k=>{
+        const ue = user[k].rama.elementoOcultoPrincipal;
+        const te = today[k].rama.elementoOcultoPrincipal;
+        let s=0;
+        if (ue === te) s=2;
+        else if (relations[ue] && relations[ue].genera === te) s=1;
+        else if (relations[te] && relations[te].genera === ue) s=1;
+        else if ((relations[ue] && relations[ue].controla===te) || (relations[te] && relations[te].controla===ue)) s=-1;
+        scores[k]=s; total+=s;
       });
-
-      return { scores, totalScore };
+      return { scores, totalScore: total };
+    }
+    function iconFor(score){ if(score===2) return '❤️'; if(score===1) return '💛'; if(score===0) return '🤍'; return '💔'; }
+    function analysisHtml(total){
+      if(total>=6) return ['❤️❤️❤️❤️❤️','Excelente — Día muy favorable'];
+      if(total>=3) return ['❤️❤️❤️❤️🤍','Favorable — Buen día para actuar'];
+      if(total>=0) return ['❤️❤️❤️🤍🤍','Neutral — Día equilibrado'];
+      if(total>=-3) return ['❤️❤️🤍🤍🤍','Poco favorable — Actúa con cautela'];
+      return ['❤️🤍🤍🤍🤍','Desafiante — Mejor día para reflexionar'];
     }
 
-    function getCompatibilityIcon(score) {
-      if (score === 2) return '❤️';
-      if (score === 1) return '💛';
-      if (score === 0) return '🤍';
-      return '💔';
-    }
-
-    function renderCompatibilityAnalysis(totalScore) {
-      let hearts = '';
-      let message = '';
-
-      if (totalScore >= 6) {
-        hearts = '❤️❤️❤️❤️❤️';
-        message = 'Excelente! Día muy favorable';
-      } else if (totalScore >= 3) {
-        hearts = '❤️❤️❤️❤️🤍';
-        message = 'Favorable. Buen día para actuar';
-      } else if (totalScore >= 0) {
-        hearts = '❤️❤️❤️🤍🤍';
-        message = 'Neutral. Día equilibrado';
-      } else if (totalScore >= -3) {
-        hearts = '❤️❤️🤍🤍🤍';
-        message = 'Poco favorable. Actúa con cautela';
-      } else {
-        hearts = '❤️🤍🤍🤍🤍';
-        message = 'Desafiante. Mejor día para reflexionar';
-      }
-
-      return `
-        <div class="heart-scale">${hearts}</div>
-        <div class="text-center text-lg font-bold text-gray-800 dark:text-white">${message}</div>
-      `;
-    }
-
-    const translations = {
-      es: {
-        title: "Calculadora BaZi 八字",
-        subtitle: "Cuatro Pilares del Destino",
-        labelDate: "Fecha de Nacimiento",
-        labelTime: "Hora de Nacimiento",
-        btnCalc: "Calcular",
-        error: "Por favor ingresa una fecha y hora válidas",
-        year: "Año",
-        month: "Mes",
-        day: "Día",
-        hour: "Hora"
-      },
-      en: {
-        title: "BaZi Calculator 八字",
-        subtitle: "Four Pillars of Destiny",
-        labelDate: "Birth Date",
-        labelTime: "Birth Time",
-        btnCalc: "Calculate",
-        error: "Please enter a valid date and time",
-        year: "Year",
-        month: "Month",
-        day: "Day",
-        hour: "Hour"
-      },
-      de: {
-        title: "BaZi Rechner 八字",
-        subtitle: "Vier Säulen des Schicksals",
-        labelDate: "Geburtsdatum",
-        labelTime: "Geburtszeit",
-        btnCalc: "Berechnen",
-        error: "Bitte gültiges Datum eingeben",
-        year: "Jahr",
-        month: "Monat",
-        day: "Tag",
-        hour: "Stunde"
-      },
-      it: {
-        title: "Calcolatrice BaZi 八字",
-        subtitle: "Quattro Pilastri del Destino",
-        labelDate: "Data di nascita",
-        labelTime: "Ora di nascita",
-        btnCalc: "Calcola",
-        error: "Inserisci una data valida",
-        year: "Anno",
-        month: "Mese",
-        day: "Giorno",
-        hour: "Ora"
-      },
-      fr: {
-        title: "Calculatrice BaZi 八字",
-        subtitle: "Quatre Piliers du Destin",
-        labelDate: "Date de naissance",
-        labelTime: "Heure de naissance",
-        btnCalc: "Calculer",
-        error: "Veuillez entrer une date valide",
-        year: "Année",
-        month: "Mois",
-        day: "Jour",
-        hour: "Heure"
-      }
+    /* === Ajustes forzados (pedidos por ti) ===
+       Hoy ajustado (02-10-2025): 乙 Yi + 巳 Si (Año), 乙 Yi + 酉 You (Mes), 乙 Yi + 辰 Chen (Día), 乙 Yi + 戌 Xu (Hora)
+       Nacimiento ajustado (forzamos día y hora de la carta de nacimiento):
+         Año: 戊 Wu + 寅 (Tigre)
+         Mes: 戊 Wu + 午 (Caballo)
+         Día: 戊 Wu + 申 (Mono)  <-- MONO DE TIERRA solicitado (tronco 戊)
+         Hora: 丙 Bing + 辰 (Dragón) <-- DRAGÓN DE FUEGO
+    */
+    const hoyAjustado = {
+      fecha:"2025-10-02",
+      anio: { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[5] }, // 乙 + 巳 (Serpiente)
+      mes:  { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[9] }, // 乙 + 酉 (Gallo)
+      dia:  { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[4] }, // 乙 + 辰 (Dragón)
+      hora: { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[10]}  // 乙 + 戌 (Perro)
     };
 
-    let currentLang = "es";
+    const nacimientoAjustado = {
+      anio: { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[2] }, // 戊 + 寅 (Tigre)
+      mes:  { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[6] }, // 戊 + 午 (Caballo)
+      dia:  { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[8] }, // 戊 + 申 (Mono)  <-- MONO de TIERRA
+      hora: { tronco: TRONCOS_CELESTES[2], rama: RAMAS_TERRESTRES[4] }  // 丙 + 辰 (Dragón de FUEGO)
+    };
 
-    function setLanguage(lang) {
-      currentLang = lang;
-      const t = translations[lang];
-      document.getElementById("title").textContent = t.title;
-      document.getElementById("subtitle").textContent = t.subtitle;
-      document.getElementById("label-date").textContent = t.labelDate;
-      document.getElementById("label-time").textContent = t.labelTime;
-      document.getElementById("calculate-btn").textContent = t.btnCalc;
-      document.getElementById("error-message").textContent = t.error;
-
-      const flagMap = { es: "🇪🇸", en: "🇬🇧", de: "🇩🇪", it: "🇮🇹", fr: "🇫🇷" };
-      document.getElementById("lang-flag").textContent = flagMap[lang];
-      document.getElementById("lang-code").textContent = lang.toUpperCase();
+    /* ===========================
+       Render + lógico del botón
+       =========================== */
+    function alignHeartsToRows(){
+      // ajusta la altura de cada caja central para que coincida con la fila correspondiente
+      const leftRows = document.querySelectorAll('#user-pillars .pillar-row');
+      const rightRows = document.querySelectorAll('#today-pillars .pillar-row');
+      const hearts = document.querySelectorAll('.compatibility-box');
+      for(let i=0;i<4;i++){
+        if(!hearts[i]) continue;
+        const left = leftRows[i];
+        const right = rightRows[i];
+        const hLeft = left ? left.getBoundingClientRect().height : 0;
+        const hRight = right ? right.getBoundingClientRect().height : 0;
+        const target = Math.max(hLeft, hRight, 70);
+        hearts[i].style.height = target + 'px';
+        hearts[i].style.width = target + 'px';
+        hearts[i].style.minWidth = '50px';
+        hearts[i].style.display = 'flex';
+        hearts[i].style.alignItems = 'center';
+        hearts[i].style.justifyContent = 'center';
+      }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const calculateBtn = document.getElementById("calculate-btn");
-      const birthDateInput = document.getElementById("birth-date");
-      const birthTimeInput = document.getElementById("birth-time");
-      const userPillarsDiv = document.getElementById("user-pillars");
-      const todayPillarsDiv = document.getElementById("today-pillars");
-      const resultsContainer = document.getElementById("results-container");
-      const errorMessageDiv = document.getElementById("error-message");
-      const compatibilityResult = document.getElementById("compatibility-result");
-      const todayDateDisplay = document.getElementById("today-date-display");
+    function renderAll(birthDateStr, birthTimeStr){
+      // parse date/time inputs
+      const birthDate = birthDateStr ? new Date(birthDateStr + 'T' + (birthTimeStr||'00:00') + ':00') : new Date();
+      // calculamos año/mes con base en input, pero **sobrescribimos** día/hora con nacimientoAjustado
+      const userYear = getYearPillar(birthDate);
+      const userMonth = getMonthPillar(birthDate);
 
-      const themeToggle = document.getElementById("theme-toggle");
-      themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-        document.body.classList.toggle("light");
+      const userPillars = {
+        year: userYear,
+        month: userMonth,
+        day: nacimientoAjustado.dia,   // forzado: Mono de Tierra (戊 申)
+        hour: nacimientoAjustado.hora  // forzado: 丙 辰 (Dragón de Fuego)
+      };
+
+      const todayPillars = {
+        year: hoyAjustado.anio,
+        month: hoyAjustado.mes,
+        day: hoyAjustado.dia,
+        hour: hoyAjustado.hora
+      };
+
+      // render columnas
+      const userHtml =
+        renderPillarRow(userPillars.year,'Año') +
+        renderPillarRow(userPillars.month,'Mes') +
+        renderPillarRow(userPillars.day,'Día') +
+        renderPillarRow(userPillars.hour,'Hora');
+
+      const todayHtml =
+        renderPillarRow(todayPillars.year,'Año') +
+        renderPillarRow(todayPillars.month,'Mes') +
+        renderPillarRow(todayPillars.day,'Día') +
+        renderPillarRow(todayPillars.hour,'Hora');
+
+      document.getElementById('user-pillars').innerHTML = userHtml;
+      document.getElementById('today-pillars').innerHTML = todayHtml;
+
+      // compat
+      const comp = calculateCompatibility(userPillars, todayPillars);
+      document.getElementById('compat-year').textContent = iconFor(comp.scores.year);
+      document.getElementById('compat-month').textContent = iconFor(comp.scores.month);
+      document.getElementById('compat-day').textContent = iconFor(comp.scores.day);
+      document.getElementById('compat-hour').textContent = iconFor(comp.scores.hour);
+
+      const [hearts, message] = analysisHtml(comp.totalScore);
+      document.getElementById('compatibility-result').innerHTML = `<div style="font-size:1.2rem">${hearts}</div><div style="margin-top:.6rem;font-weight:700">${message}</div>`;
+
+      // mostrar panel si estaba oculto
+      document.getElementById('results-container').classList.remove('hidden');
+
+      // small delay to ensure DOM painted before measuring rows
+      setTimeout(alignHeartsToRows, 60);
+    }
+
+    /* evento del botón */
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('calculate-btn');
+      const inDate = document.getElementById('birth-date');
+      const inTime = document.getElementById('birth-time');
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        renderAll(inDate.value, inTime.value);
       });
 
-      const langBtn = document.getElementById("lang-btn");
-      const langMenu = document.getElementById("lang-menu");
-      
-      langBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        langMenu.classList.toggle("hidden");
-      });
-
-      document.addEventListener("click", () => {
-        langMenu.classList.add("hidden");
-      });
-
-      document.querySelectorAll(".lang-option").forEach(btn => {
-        btn.addEventListener("click", () => {
-          setLanguage(btn.dataset.lang);
-          langMenu.classList.add("hidden");
-        });
-      });
-
-      calculateBtn.addEventListener("click", () => {
-        const birthDate = birthDateInput.value;
-        const birthTime = birthTimeInput.value;
-
-        if (!birthDate || !birthTime) {
-          errorMessageDiv.classList.remove("hidden");
-          resultsContainer.classList.add("hidden");
-          return;
-        }
-
-        errorMessageDiv.classList.add("hidden");
-
-        const fullDateTime = `${birthDate}T${birthTime}:00`;
-        const userDate = new Date(fullDateTime);
-
-        const userPillars = {
-          year: getYearPillar(userDate),
-          month: getMonthPillar(userDate),
-          day: getDayPillar(userDate),
-          hour: getHourPillar(userDate)
-        };
-
-        const today = new Date();
-        const todayPillars = {
-          year: getYearPillar(today),
-          month: getMonthPillar(today),
-          day: getDayPillar(today),
-          hour: getHourPillar(today)
-        };
-
-        const t = translations[currentLang];
-        
-        userPillarsDiv.innerHTML = 
-          renderPillarRow(userPillars.year, t.year) +
-          renderPillarRow(userPillars.month, t.month) +
-          renderPillarRow(userPillars.day, t.day) +
-          renderPillarRow(userPillars.hour, t.hour);
-
-        todayPillarsDiv.innerHTML = 
-          renderPillarRow(todayPillars.year, t.year) +
-          renderPillarRow(todayPillars.month, t.month) +
-          renderPillarRow(todayPillars.day, t.day) +
-          renderPillarRow(todayPillars.hour, t.hour);
-
-        const compatibility = calculateCompatibility(userPillars, todayPillars);
-        
-        document.getElementById("compat-year").textContent = getCompatibilityIcon(compatibility.scores.year);
-        document.getElementById("compat-month").textContent = getCompatibilityIcon(compatibility.scores.month);
-        document.getElementById("compat-day").textContent = getCompatibilityIcon(compatibility.scores.day);
-        document.getElementById("compat-hour").textContent = getCompatibilityIcon(compatibility.scores.hour);
-
-        compatibilityResult.innerHTML = renderCompatibilityAnalysis(compatibility.totalScore);
-
-        todayDateDisplay.textContent = today.toLocaleDateString(
-          currentLang === 'es' ? 'es-ES' : currentLang === 'en' ? 'en-US' : currentLang === 'de' ? 'de-DE' : currentLang === 'it' ? 'it-IT' : 'fr-FR',
-          { weekday: "long", year: "numeric", month: "long", day: "numeric" }
-        );
-
-        resultsContainer.classList.remove("hidden");
-        setTimeout(() => {
-          resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-      });
+      // render inicial (auto) — útil al abrir la página
+      setTimeout(()=> renderAll(inDate.value, inTime.value), 120);
+      // volver a alinear si redimensionan la ventana
+      window.addEventListener('resize', () => setTimeout(alignHeartsToRows, 120));
     });
   </script>
 </body>
 </html>
+
+
