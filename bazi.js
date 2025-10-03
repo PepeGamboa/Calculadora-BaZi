@@ -1,5 +1,9 @@
-// bazi.js ajustado con compatibilidad y resúmenes fijos
+/* bazi.js - actualizado y corregido */
+/* Incluye: Troncos + Ramas, ajustes fijos de nacimiento y hoy, render completo */
 
+/* ---------------------------
+   Datos: Troncos y Ramas
+   --------------------------- */
 const TRONCOS_CELESTES = [
   { es: "Yang Madera", cn: "甲 Jia", elemento: "Madera", resumen: "El Jia es firme, recto y perseverante, como un gran árbol que busca la luz." },
   { es: "Yin Madera", cn: "乙 Yi", elemento: "Madera", resumen: "El Yi es flexible, adaptable y sutil, como una enredadera que encuentra su camino." },
@@ -28,7 +32,9 @@ const RAMAS_TERRESTRES = [
   { es: "Cerdo", cn: "亥 Hai", animal: "Cerdo", emoji: "🐖", elementoOcultoPrincipal: "Agua", resumen: "El Cerdo es generoso, noble y sincero, confía en la bondad de la vida." }
 ];
 
-// === CARTAS AJUSTADAS ===
+/* ---------------------------
+   Ajustes manuales (fijos)
+   --------------------------- */
 const hoyAjustado = {
   fecha: "2025-10-02",
   anio: { tronco: TRONCOS_CELESTES[1], rama: RAMAS_TERRESTRES[5] },   // 乙 Yi + 巳 Si (Serpiente)
@@ -40,35 +46,13 @@ const hoyAjustado = {
 const nacimientoAjustado = {
   anio: { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[2] },   // 戊 Wu + 寅 Yin (Tigre)
   mes:  { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[6] },   // 戊 Wu + 午 Wu (Caballo)
-  dia:  { tronco: TRONCOS_CELESTES[4], rama: RAMAS_TERRESTRES[8] },   // 戊 Wu + 申 Shen (Mono)
-  hora: { tronco: TRONCOS_CELESTES[2], rama: RAMAS_TERRESTRES[4] }    // 丙 Bing + 辰 Chen (Dragón)
+  dia:  { tronco: TRONCOS_CELESTES[5], rama: RAMAS_TERRESTRES[8] },   // ✅ 己 Ji + 申 Shen (Mono de Tierra)
+  hora: { tronco: TRONCOS_CELESTES[2], rama: RAMAS_TERRESTRES[4] }    // ✅ 丙 Bing + 辰 Chen (Dragón de Fuego)
 };
 
-// === RENDER ===
-function renderPillarRow(pillar, label) {
-  const troncoColor = getElementColor(pillar.tronco.elemento);
-  const ramaColor = getElementColor(pillar.rama.elementoOcultoPrincipal);
-
-  return `
-    <div class="pillar-row">
-      <div class="pillar-label">${label}</div>
-      <div class="pillar-content">
-        <div class="animal-emoji">${pillar.rama.emoji}</div>
-        <div class="pillar-info" style="border-color: ${troncoColor}">
-          <div class="pillar-cn" style="color: ${troncoColor}">${pillar.tronco.cn}</div>
-          <div class="pillar-es">${pillar.tronco.es}</div>
-          <div class="text-xs text-gray-500 mt-1">${pillar.tronco.resumen}</div>
-        </div>
-        <div class="pillar-info" style="border-color: ${ramaColor}">
-          <div class="pillar-cn" style="color: ${ramaColor}">${pillar.rama.cn}</div>
-          <div class="pillar-es">${pillar.rama.animal}</div>
-          <div class="text-xs text-gray-500 mt-1">${pillar.rama.resumen}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
+/* ---------------------------
+   Render helpers
+   --------------------------- */
 function getElementColor(elemento) {
   const colors = {
     'Madera': '#10b981',
@@ -80,15 +64,66 @@ function getElementColor(elemento) {
   return colors[elemento] || '#6b7280';
 }
 
-// Exportar si es necesario
+function renderPillarRow(pillar, label) {
+  const troncoColor = getElementColor(pillar.tronco.elemento);
+  const ramaColor = getElementColor(pillar.rama.elementoOcultoPrincipal);
+
+  return `
+    <div class="pillar-row">
+      <div class="pillar-label">${label}</div>
+      <div class="pillar-content" style="display:grid; grid-template-columns:60px 1fr 1fr; gap:.75rem; align-items:start;">
+        <div class="animal-emoji">${pillar.rama.emoji}</div>
+        <div class="pillar-info" style="border-color: ${troncoColor};">
+          <div class="pillar-cn" style="color:${troncoColor}">${pillar.tronco.cn}</div>
+          <div class="pillar-es">${pillar.tronco.es}</div>
+          <div class="pillar-summary">${pillar.tronco.resumen}</div>
+        </div>
+        <div class="pillar-info" style="border-color: ${ramaColor};">
+          <div class="pillar-cn" style="color:${ramaColor}">${pillar.rama.cn}</div>
+          <div class="pillar-es">${pillar.rama.animal}</div>
+          <div class="pillar-summary">${pillar.rama.resumen}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------------------------
+   DOM
+   --------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const userPillarsDiv = document.getElementById('user-pillars');
+  const todayPillarsDiv = document.getElementById('today-pillars');
+
+  if (!userPillarsDiv || !todayPillarsDiv) return;
+
+  // Render carta de nacimiento fija
+  userPillarsDiv.innerHTML =
+    renderPillarRow(nacimientoAjustado.anio, 'Año') +
+    renderPillarRow(nacimientoAjustado.mes, 'Mes') +
+    renderPillarRow(nacimientoAjustado.dia, 'Día') +   // ✅ Mono de Tierra
+    renderPillarRow(nacimientoAjustado.hora, 'Hora');  // ✅ Dragón de Fuego
+
+  // Render carta del día ajustada
+  todayPillarsDiv.innerHTML =
+    renderPillarRow(hoyAjustado.anio, 'Año') +
+    renderPillarRow(hoyAjustado.mes, 'Mes') +
+    renderPillarRow(hoyAjustado.dia, 'Día') +
+    renderPillarRow(hoyAjustado.hora, 'Hora');
+});
+
+/* ---------------------------
+   Export
+   --------------------------- */
 if (typeof module !== 'undefined') {
   module.exports = {
+    TRONCOS_CELESTES,
+    RAMAS_TERRESTRES,
     hoyAjustado,
     nacimientoAjustado,
-    renderPillarRow,
-    TRONCOS_CELESTES,
-    RAMAS_TERRESTRES
+    renderPillarRow
   };
 }
+
 
 
