@@ -4,8 +4,377 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora BaZi 八字</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      padding: 1rem;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .header {
+      background: linear-gradient(90deg, #3B82F6, #9333EA, #F59E0B);
+      background-size: 300% 300%;
+      animation: gradientShift 8s linear infinite;
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      color: white;
+      box-shadow: 0 20px 50px rgba(14, 24, 45, 0.2);
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .controls {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: end;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #374151;
+    }
+
+    .input-field {
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      border: 2px solid #e5e7eb;
+      background: white;
+      font-size: 1.05rem;
+      font-family: inherit;
+      min-width: 200px;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-calc {
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      color: white;
+      padding: 0.85rem 2rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+      transition: transform 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-calc:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.3);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .date-display {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 100px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .column-header {
+      font-weight: 800;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.15rem;
+    }
+
+    .birth-header {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+      border: 2px solid #667eea;
+      color: #334155;
+    }
+
+    .today-header {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(34, 197, 94, 0.1));
+      border: 2px solid #10b981;
+      color: #065f46;
+    }
+
+    .pillar-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .pillar-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      min-height: 160px;
+    }
+
+    .pillar-label {
+      font-weight: 700;
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .pillar-info {
+      background: white;
+      border-radius: 10px;
+      padding: 0.9rem;
+      border: 2px solid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 140px;
+    }
+
+    .pillar-cn {
+      font-weight: 800;
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .pillar-es {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .pillar-summary {
+      font-size: 0.85rem;
+      color: #374151;
+      text-align: center;
+      line-height: 1.2rem;
+      margin-top: 0.4rem;
+    }
+
+    .animal-emoji {
+      font-size: 2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .hearts-column {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .heart-box {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 12px;
+      border: 3px solid #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.15);
+    }
+
+    .analysis {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      text-align: center;
+    }
+
+    .analysis-title {
+      font-weight: 800;
+      margin-bottom: 0.8rem;
+      color: #374151;
+      font-size: 1.2rem;
+    }
+
+    .analysis-hearts {
+      font-size: 1.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .analysis-text {
+      font-weight: 700;
+      color: #1f2937;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .comparison {
+        grid-template-columns: 1fr 90px 1fr;
+      }
+      
+      .pillar-row {
+        grid-template-columns: 70px 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 0.5rem;
+      }
+
+      .container {
+        padding: 0;
+      }
+
+      .header {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .input-group {
+        width: 100%;
+      }
+
+      .input-field {
+        min-width: 100%;
+      }
+
+      .comparison {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .hearts-column {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .heart-box {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .pillar-row {
+        grid-template-columns: 60px 1fr 1fr;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        min-height: 130px;
+      }
+
+      .pillar-label {
+        font-size: 0.85rem;
+      }
+
+      .pillar-info {
+        min-height: 110px;
+        padding: 0.6rem;
+      }
+
+      .pillar-cn {
+        font-size: 1.1rem;
+      }
+
+      .pillar-es {
+        font-size: 0.8rem;
+      }
+
+      .pillar-summary {
+        font-size: 0.72rem;
+        line-height: 1rem;
+      }
+
+      .animal-emoji {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -52,7 +421,246 @@
     </div>
   </div>
 
-  <script src="bazi.js"></script>
+  <script>
+    // Troncos Celestes
+    const TRONCOS = [
+      {es:"Yang Madera", cn:"甲 Jia", elem:"Madera", desc:"Firme como un árbol."},
+      {es:"Yin Madera", cn:"乙 Yi", elem:"Madera", desc:"Flexible como enredadera."},
+      {es:"Yang Fuego", cn:"丙 Bing", elem:"Fuego", desc:"Luminoso como el sol."},
+      {es:"Yin Fuego", cn:"丁 Ding", elem:"Fuego", desc:"Cálido como vela."},
+      {es:"Yang Tierra", cn:"戊 Wu", elem:"Tierra", desc:"Estable como montaña."},
+      {es:"Yin Tierra", cn:"己 Ji", elem:"Tierra", desc:"Fértil como tierra."},
+      {es:"Yang Metal", cn:"庚 Geng", elem:"Metal", desc:"Fuerte como espada."},
+      {es:"Yin Metal", cn:"辛 Xin", elem:"Metal", desc:"Refinado como joya."},
+      {es:"Yang Agua", cn:"壬 Ren", elem:"Agua", desc:"Profundo como océano."},
+      {es:"Yin Agua", cn:"癸 Gui", elem:"Agua", desc:"Sutil como lluvia."}
+    ];
+
+    // Ramas Terrestres
+    const RAMAS = [
+      {es:"Rata", cn:"子 Zi", animal:"Rata", emoji:"🐀", elem:"Agua", desc:"Astuta."},
+      {es:"Buey", cn:"丑 Chou", animal:"Buey", emoji:"🐂", elem:"Tierra", desc:"Trabajador."},
+      {es:"Tigre", cn:"寅 Yin", animal:"Tigre", emoji:"🐅", elem:"Madera", desc:"Valiente."},
+      {es:"Conejo", cn:"卯 Mao", animal:"Conejo", emoji:"🐇", elem:"Madera", desc:"Sensible."},
+      {es:"Dragón", cn:"辰 Chen", animal:"Dragón", emoji:"🐉", elem:"Tierra", desc:"Magnético."},
+      {es:"Serpiente", cn:"巳 Si", animal:"Serpiente", emoji:"🐍", elem:"Fuego", desc:"Sabia."},
+      {es:"Caballo", cn:"午 Wu", animal:"Caballo", emoji:"🐴", elem:"Fuego", desc:"Libre."},
+      {es:"Cabra", cn:"未 Wei", animal:"Cabra", emoji:"🐐", elem:"Tierra", desc:"Compasiva."},
+      {es:"Mono", cn:"申 Shen", animal:"Mono", emoji:"🐵", elem:"Metal", desc:"Ingenioso."},
+      {es:"Gallo", cn:"酉 You", animal:"Gallo", emoji:"🐔", elem:"Metal", desc:"Observador."},
+      {es:"Perro", cn:"戌 Xu", animal:"Perro", emoji:"🐕", elem:"Tierra", desc:"Leal."},
+      {es:"Cerdo", cn:"亥 Hai", animal:"Cerdo", emoji:"🐖", elem:"Agua", desc:"Generoso."}
+    ];
+
+    const GANZHI = [];
+    for(let i=0; i<60; i++) GANZHI.push({t: TRONCOS[i%10], r: RAMAS[i%12]});
+
+    // Términos solares (Jieqi)
+    const JIEQI = [
+      null,
+      [2,4],   // Lichun - Mes 1
+      [3,6],   // Jingzhe - Mes 2
+      [4,5],   // Qingming - Mes 3
+      [5,6],   // Lixia - Mes 4
+      [6,6],   // Mangzhong - Mes 5
+      [7,7],   // Xiaoshu - Mes 6
+      [8,8],   // Liqiu - Mes 7
+      [9,8],   // Bailu - Mes 8
+      [10,8],  // Hanlu - Mes 9
+      [11,7],  // Lidong - Mes 10
+      [12,7],  // Daxue - Mes 11
+      [1,6]    // Xiaohan - Mes 12
+    ];
+
+    function getYearPillar(d) {
+      let y = d.getFullYear();
+      const [m,day] = JIEQI[1];
+      if(d < new Date(y,m-1,day)) y--;
+      let idx = (y-4)%60;
+      if(idx<0) idx+=60;
+      return GANZHI[idx];
+    }
+
+    function getMonthPillar(d) {
+      const y = d.getFullYear();
+      let solarMonth = 1;
+      
+      for(let i=1; i<=12; i++){
+        const [m1,d1] = JIEQI[i];
+        const startDate = new Date(y, m1-1, d1);
+        
+        const nextI = (i % 12) + 1;
+        const [m2,d2] = JIEQI[nextI];
+        const endYear = (i === 12) ? y+1 : y;
+        const endDate = new Date(endYear, m2-1, d2);
+        
+        if(d >= startDate && d < endDate){
+          solarMonth = i;
+          break;
+        }
+      }
+      
+      const branchIdx = (solarMonth + 1) % 12;
+      const yearTronco = TRONCOS.indexOf(getYearPillar(d).t);
+      const stemBase = [2,4,6,8,0][yearTronco % 5];
+      const offset = branchIdx >= 2 ? branchIdx - 2 : branchIdx + 10;
+      const stemIdx = (stemBase + offset) % 10;
+      
+      return {t: TRONCOS[stemIdx], r: RAMAS[branchIdx]};
+    }
+
+    function getDayPillar(d) {
+      // Ref: 30 junio 1998 = Ganzhi 44 (己酉 - Yin Tierra, Gallo)
+      const ref = new Date(1998, 5, 30);
+      const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const days = Math.floor((target - ref) / 86400000);
+      
+      let idx = (44 + days) % 60;
+      if(idx < 0) idx += 60;
+      
+      return GANZHI[idx];
+    }
+
+    function getHourPillar(d) {
+      const h = d.getHours();
+      let bi;
+      
+      if(h >= 23 || h < 1) bi = 0;
+      else if(h < 3) bi = 1;
+      else if(h < 5) bi = 2;
+      else if(h < 7) bi = 3;
+      else if(h < 9) bi = 4;
+      else if(h < 11) bi = 5;
+      else if(h < 13) bi = 6;
+      else if(h < 15) bi = 7;
+      else if(h < 17) bi = 8;
+      else if(h < 19) bi = 9;
+      else if(h < 21) bi = 10;
+      else bi = 11;
+      
+      const dayTronco = TRONCOS.indexOf(getDayPillar(d).t);
+      const stemBase = [0,2,4,6,8][dayTronco % 5];
+      const stemIdx = (stemBase + bi) % 10;
+      
+      return {t: TRONCOS[stemIdx], r: RAMAS[bi]};
+    }
+
+    function color(e) {
+      return {Madera:'#10b981',Fuego:'#ef4444',Tierra:'#f59e0b',Metal:'#9ca3af',Agua:'#3b82f6'}[e]||'#6b7280';
+    }
+
+    function renderPillar(p,lbl) {
+      const tc = color(p.t.elem);
+      const rc = color(p.r.elem);
+      return `
+        <div class="pillar-row">
+          <div class="pillar-label">${lbl}</div>
+          <div class="pillar-info" style="border-color:${tc}">
+            <div class="pillar-cn" style="color:${tc}">${p.t.cn}</div>
+            <div class="pillar-es">${p.t.es}</div>
+            <div class="pillar-summary">${p.t.desc}</div>
+          </div>
+          <div class="pillar-info" style="border-color:${rc}">
+            <div class="animal-emoji">${p.r.emoji}</div>
+            <div class="pillar-cn" style="color:${rc}">${p.r.cn}</div>
+            <div class="pillar-es">${p.r.animal}</div>
+            <div class="pillar-summary">${p.r.desc}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function calcCompat(u,t) {
+      const rel = {
+        Madera:{gen:'Fuego',ctrl:'Tierra'},
+        Fuego:{gen:'Tierra',ctrl:'Metal'},
+        Tierra:{gen:'Metal',ctrl:'Agua'},
+        Metal:{gen:'Agua',ctrl:'Madera'},
+        Agua:{gen:'Madera',ctrl:'Fuego'}
+      };
+      const k = ['y','m','d','h'];
+      let tot = 0, sc = {};
+      k.forEach(x=>{
+        const ue = u[x].r.elem;
+        const te = t[x].r.elem;
+        let s = 0;
+        if(ue===te) s=2;
+        else if(rel[ue]?.gen===te||rel[te]?.gen===ue) s=1;
+        else if(rel[ue]?.ctrl===te||rel[te]?.ctrl===ue) s=-1;
+        sc[x]=s;
+        tot+=s;
+      });
+      return {sc,tot};
+    }
+
+    function icon(s) {
+      return s===2?'❤️':s===1?'💛':s===0?'🤍':'💔';
+    }
+
+    function analysis(t) {
+      if(t>=6) return ['❤️❤️❤️❤️❤️','Excelente — Día muy favorable'];
+      if(t>=3) return ['❤️❤️❤️❤️🤍','Favorable — Buen día'];
+      if(t>=0) return ['❤️❤️❤️🤍🤍','Neutral — Equilibrado'];
+      if(t>=-3) return ['❤️❤️🤍🤍🤍','Poco favorable'];
+      return ['❤️🤍🤍🤍🤍','Desafiante'];
+    }
+
+    function calculate() {
+      const bd = document.getElementById('birth-date').value;
+      const bt = document.getElementById('birth-time').value;
+      if(!bd||!bt) {alert('Ingresa fecha y hora');return;}
+
+      const birth = new Date(bd+'T'+bt+':00');
+      const today = new Date();
+
+      const user = {
+        y:getYearPillar(birth),
+        m:getMonthPillar(birth),
+        d:getDayPillar(birth),
+        h:getHourPillar(birth)
+      };
+
+      const tod = {
+        y:getYearPillar(today),
+        m:getMonthPillar(today),
+        d:getDayPillar(today),
+        h:getHourPillar(today)
+      };
+
+      document.getElementById('user-pillars').innerHTML =
+        renderPillar(user.y,'Año')+
+        renderPillar(user.m,'Mes')+
+        renderPillar(user.d,'Día')+
+        renderPillar(user.h,'Hora');
+
+      document.getElementById('today-pillars').innerHTML =
+        renderPillar(tod.y,'Año')+
+        renderPillar(tod.m,'Mes')+
+        renderPillar(tod.d,'Día')+
+        renderPillar(tod.h,'Hora');
+
+      const comp = calcCompat(user,tod);
+      document.getElementById('hearts').innerHTML =
+        `<div class="heart-box">${icon(comp.sc.y)}</div>` +
+        `<div class="heart-box">${icon(comp.sc.m)}</div>` +
+        `<div class="heart-box">${icon(comp.sc.d)}</div>` +
+        `<div class="heart-box">${icon(comp.sc.h)}</div>`;
+
+      const [hts,msg] = analysis(comp.tot);
+      document.getElementById('analysis-result').innerHTML =
+        `<div class="analysis-hearts">${hts}</div><div class="analysis-text">${msg}</div>`;
+
+      document.getElementById('date-display').textContent =
+        'Hoy: '+today.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+      document.getElementById('results').classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.getElementById('calc-btn').addEventListener('click',calculate);
+      setTimeout(calculate,100);
+    });
+  </script>
 </body>
 </html>
 
